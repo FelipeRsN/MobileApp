@@ -3,6 +3,7 @@ package com.arctouch.codechallenge.view
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration
+import android.graphics.Movie
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -14,10 +15,12 @@ import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.adapter.MoviesListAdapter
 import com.arctouch.codechallenge.util.Resource
 import com.arctouch.codechallenge.viewmodel.MovieListViewModel
+import com.arctouch.codechallenge.viewmodel.NavigationViewModel
 import kotlinx.android.synthetic.main.movie_list_fragment.*
 
 class MovieListFragment : Fragment() {
     private lateinit var viewModel: MovieListViewModel
+    private lateinit var navigationViewModel: NavigationViewModel
     private var snackbar: Snackbar? = null
 
     companion object {
@@ -31,6 +34,7 @@ class MovieListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MovieListViewModel::class.java)
+        navigationViewModel = ViewModelProviders.of(activity!!).get(NavigationViewModel::class.java)
         viewModel.init()
 
         setupRecyclerView()
@@ -41,7 +45,11 @@ class MovieListFragment : Fragment() {
             it?.let {
                 when (it.status) {
                     Resource.Status.SUCCESS ->{
-                        recyclerView.adapter = MoviesListAdapter(it.data!!)
+                        recyclerView.adapter = MoviesListAdapter(it.data!!, object : MoviesListAdapter.ClickListener{
+                            override fun onItemClick(position: Int, v: View, item: com.arctouch.codechallenge.model.Movie) {
+                                navigationViewModel.changeFragmentTo(NavigationViewModel.AvailableFragments.MovieDetail, item)
+                            }
+                        })
                         dismissSwipeRefresh()
                         dismissSnackBar()
                     }

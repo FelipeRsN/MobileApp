@@ -7,27 +7,26 @@ import android.view.ViewGroup
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.model.Movie
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.movie_listitem.view.*
 
-class MoviesListAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<MoviesListAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class MoviesListAdapter() : RecyclerView.Adapter<MoviesListAdapter.ViewHolder>() {
+    private var clickListener: ClickListener? = null
+    private lateinit var movies: List<Movie>
 
-        private val movieImageUrlBuilder = MovieImageUrlBuilder()
+    constructor(movies: List<Movie>, clickListener: ClickListener? = null) : this() {
+        this.movies = movies
+        this.clickListener = clickListener
+    }
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
         fun bind(movie: Movie) {
             itemView.titleTextView.text = movie.title
             itemView.genresTextView.text = movie.genres?.joinToString(separator = ", ") { it.name }
             itemView.releaseDateTextView.text = movie.releaseDate
 
-            Glide.with(itemView)
-                .load(movie.posterPath?.let { movieImageUrlBuilder.buildPosterUrl(it) })
-                .transition(withCrossFade())
-                .apply(RequestOptions().placeholder(R.drawable.placeholder))
-                .into(itemView.posterImageView)
+            MovieImageUrlBuilder.loadImageForPoster(movie.posterPath, itemView.posterImageView)
         }
     }
 
@@ -36,7 +35,17 @@ class MoviesListAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<
         return ViewHolder(view)
     }
 
+
     override fun getItemCount() = movies.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(movies[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.itemView.setOnClickListener{
+            clickListener?.onItemClick(position, it, movies[position])
+        }
+        holder.bind(movies[position])
+    }
+
+    interface ClickListener {
+        fun onItemClick(position: Int, v: View, item: Movie)
+    }
 }
