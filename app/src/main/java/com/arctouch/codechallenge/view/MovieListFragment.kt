@@ -3,25 +3,33 @@ package com.arctouch.codechallenge.view
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration
-import android.graphics.Movie
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.adapter.MoviesListAdapter
+import com.arctouch.codechallenge.components.EndlessRecyclerViewScrollListener
+import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.util.App
 import com.arctouch.codechallenge.util.Resource
 import com.arctouch.codechallenge.viewmodel.MovieListViewModel
 import com.arctouch.codechallenge.viewmodel.NavigationViewModel
 import kotlinx.android.synthetic.main.movie_list_fragment.*
 
+
 class MovieListFragment : Fragment() {
     private lateinit var viewModel: MovieListViewModel
     private lateinit var navigationViewModel: NavigationViewModel
     private var snackbar: Snackbar? = null
+    private lateinit var adapter: MoviesListAdapter
+    private var movies = ArrayList<Movie>()
+    private lateinit var scrollListener: EndlessRecyclerViewScrollListener
 
     companion object {
         fun newInstance() = MovieListFragment()
@@ -37,7 +45,7 @@ class MovieListFragment : Fragment() {
         navigationViewModel = ViewModelProviders.of(activity!!).get(NavigationViewModel::class.java)
         viewModel.init()
 
-        setupRecyclerView()
+        setupRecyclerViewAndListeners()
 
         toolbar.title = getString(R.string.app_name)
 
@@ -45,11 +53,8 @@ class MovieListFragment : Fragment() {
             it?.let {
                 when (it.status) {
                     Resource.Status.SUCCESS ->{
-                        recyclerView.adapter = MoviesListAdapter(it.data!!, object : MoviesListAdapter.ClickListener{
-                            override fun onItemClick(position: Int, v: View, item: com.arctouch.codechallenge.model.Movie) {
-                                navigationViewModel.changeFragmentTo(NavigationViewModel.AvailableFragments.MovieDetail, item)
-                            }
-                        })
+                        movies.addAll(it.data!!)
+                        adapter.notifyDataSetChanged()
                         dismissSwipeRefresh()
                         dismissSnackBar()
                     }
@@ -67,19 +72,49 @@ class MovieListFragment : Fragment() {
         viewModel.getMoviesData()
     }
 
-    private fun setupRecyclerView(){
+    //Setup recyclerview layout manager and listeners
+    private fun setupRecyclerViewAndListeners(){
+        //get screen orientation and set gridlayout columns
         val orientation = resources.configuration.orientation
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.layoutManager = GridLayoutManager(activity, 3)
-        } else {
-            recyclerView.layoutManager = GridLayoutManager(activity, 2)
-        }
 
+        val layoutManager = if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            GridLayoutManager(activity, 3)
+         else
+            GridLayoutManager(activity, 2)
+
+        recyclerView.layoutManager = layoutManager
+        //
+
+        //adapter setup
+        adapter = MoviesListAdapter(movies)
+        adapter.setOnItemClickListener(object : MoviesListAdapter.ClickListener{
+            override fun onItemClick(position: Int, v: View, item: com.arctouch.codechallenge.model.Movie) {
+                navigationViewModel.changeFragmentTo(NavigationViewModel.AvailableFragments.MovieDetail, item)
+            }
+        })
+        recyclerView.adapter = adapter
+        //
+
+        //endless scroll listener setup
+        scrollListener = object: EndlessRecyclerViewScrollListener(layoutManager){
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                Log.d(App.LOG_ONLINE_REQUEST, "onLoadMore + "+page)
+                viewModel.loadMoreMovies()
+            }
+        }
+        recyclerView.addOnScrollListener(scrollListener)
+        //
+
+        //SwipeToRefresh listener
         swipeToRefresh.setOnRefreshListener {
             viewModel.getMoviesData(true)
+            movies.clear()
+            scrollListener.resetState()
         }
+        //
     }
 
+    //region swipe refresh controller
     private fun showSwipeRefresh(){
         if(!swipeToRefresh.isRefreshing) swipeToRefresh?.isRefreshing = true
     }
@@ -87,7 +122,9 @@ class MovieListFragment : Fragment() {
     private fun dismissSwipeRefresh(){
         if(swipeToRefresh.isRefreshing) swipeToRefresh?.isRefreshing = false
     }
+    //endregion
 
+    //region snackbar controler
     private fun showSnackBar(throwable: Throwable? = null){
         snackbar = if(throwable != null && !throwable.localizedMessage.isNullOrEmpty()){
             Snackbar.make(activity!!.findViewById(android.R.id.content), throwable.localizedMessage, Snackbar.LENGTH_INDEFINITE)
@@ -106,4 +143,5 @@ class MovieListFragment : Fragment() {
     private fun dismissSnackBar() {
         if (snackbar != null && snackbar!!.isShown) snackbar?.dismiss()
     }
+    //endregion
 }

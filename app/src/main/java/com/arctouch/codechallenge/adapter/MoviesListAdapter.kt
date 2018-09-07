@@ -14,7 +14,7 @@ class MoviesListAdapter() : RecyclerView.Adapter<MoviesListAdapter.ViewHolder>()
     private var clickListener: ClickListener? = null
     private lateinit var movies: List<Movie>
 
-    constructor(movies: List<Movie>, clickListener: ClickListener? = null) : this() {
+    constructor(movies: ArrayList<Movie>) : this() {
         this.movies = movies
         this.clickListener = clickListener
     }
@@ -42,7 +42,12 @@ class MoviesListAdapter() : RecyclerView.Adapter<MoviesListAdapter.ViewHolder>()
         holder.itemView.setOnClickListener{
             clickListener?.onItemClick(position, it, movies[position])
         }
+
         holder.bind(movies[position])
+    }
+
+    fun setOnItemClickListener(clickListener: ClickListener){
+        this.clickListener = clickListener
     }
 
     interface ClickListener {
