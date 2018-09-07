@@ -98,7 +98,6 @@ class MovieListFragment : Fragment() {
         //endless scroll listener setup
         scrollListener = object: EndlessRecyclerViewScrollListener(layoutManager){
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                Log.d(App.LOG_ONLINE_REQUEST, "onLoadMore + "+page)
                 viewModel.loadMoreMovies()
             }
         }

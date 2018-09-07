@@ -2,9 +2,11 @@ package com.arctouch.codechallenge.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import com.arctouch.codechallenge.api.MoviesRepository
 import com.arctouch.codechallenge.data.Cache
 import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.util.App
 import com.arctouch.codechallenge.util.NetworkUtils
 import com.arctouch.codechallenge.util.Resource
 
@@ -25,7 +27,8 @@ class MovieListViewModel : ViewModel() {
 
         if(refreshValues) pageNumber = 1
 
-        getGenre()
+        if(Cache.hasGenreCached()) getMovieList()
+        else getGenre()
     }
 
     //get genre to cache
@@ -47,12 +50,10 @@ class MovieListViewModel : ViewModel() {
     //get movies list
     private fun getMovieList(){
         repository.getMovieList(pageNumber, { it ->
-
             val moviesWithGenres = ArrayList<Movie>()
             moviesWithGenres.addAll(it.results.map { movie ->
                 movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
             })
-
             moviesData.value = Resource.success(moviesWithGenres)
         },{
             moviesData.value = Resource.error(it)
