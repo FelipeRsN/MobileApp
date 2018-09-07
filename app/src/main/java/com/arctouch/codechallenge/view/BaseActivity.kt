@@ -1,14 +1,12 @@
 package com.arctouch.codechallenge.view
 
 import android.arch.lifecycle.Observer
-import android.support.v7.app.AppCompatActivity
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.viewmodel.NavigationViewModel
-import android.arch.lifecycle.ViewModelProviders
-
-
 
 class BaseActivity : AppCompatActivity() {
 
@@ -25,8 +23,8 @@ class BaseActivity : AppCompatActivity() {
                     .commit()
         }
 
-        viewModel.fragment.observe(this, Observer {
-            it?.let {
+        viewModel.fragment.observe(this, Observer { it ->
+            it?.getContentIfNotHandled().let { it ->
                 when(it){
                     NavigationViewModel.AvailableFragments.MoviesList -> {
                         changeFragmentTo(MovieListFragment.newInstance())

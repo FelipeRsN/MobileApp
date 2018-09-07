@@ -1,8 +1,9 @@
 package com.arctouch.codechallenge.viewmodel
 
-import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.util.SingleLiveEvent
 
 
 class NavigationViewModel: ViewModel() {
@@ -12,16 +13,17 @@ class NavigationViewModel: ViewModel() {
         MovieDetail
     }
 
-    val fragment = MutableLiveData<AvailableFragments>()
+    val fragment = MutableLiveData<SingleLiveEvent<AvailableFragments>>()
     private var movie: Movie? = null
 
-    fun changeFragmentTo(value: AvailableFragments, movie: Movie){
-        fragment.value = value
+    fun changeFragmentTo(value: AvailableFragments, movie: Movie? = null){
+        fragment.value = SingleLiveEvent(value)
         this.movie = movie
     }
 
     fun getMovie(): Movie?{
         return movie
     }
+
 
 }
