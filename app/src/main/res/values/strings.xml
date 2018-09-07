@@ -6,4 +6,6 @@
     <string name="noNetworkAvailable">No internet detected</string>
     <string name="tryAgain">Try again</string>
     <string name="overview">Overview</string>
+
+    <string name="search">Search movie</string>
 </resources>

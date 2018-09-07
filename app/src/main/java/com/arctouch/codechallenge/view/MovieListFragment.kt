@@ -8,7 +8,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.adapter.MoviesListAdapter
 import com.arctouch.codechallenge.components.EndlessRecyclerViewScrollListener
 import com.arctouch.codechallenge.model.Movie
-import com.arctouch.codechallenge.util.App
 import com.arctouch.codechallenge.util.Resource
 import com.arctouch.codechallenge.viewmodel.MovieListViewModel
 import com.arctouch.codechallenge.viewmodel.NavigationViewModel
@@ -45,10 +43,12 @@ class MovieListFragment : Fragment() {
         navigationViewModel = ViewModelProviders.of(activity!!).get(NavigationViewModel::class.java)
         viewModel.init()
 
-        setupRecyclerViewAndListeners()
-
         toolbar.title = getString(R.string.app_name)
 
+        //setup recyclerview and listeners
+        setupRecyclerViewAndListeners()
+
+        //viewmodel controller
         viewModel.moviesData.observe(this, Observer { it ->
             it?.let {
                 when (it.status) {
@@ -68,7 +68,6 @@ class MovieListFragment : Fragment() {
                 }
             }
         })
-
         viewModel.getMoviesData()
     }
 
