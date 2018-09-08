@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">Code Challenge</string>
+    <string name="app_name" translatable="false">Code Challenge</string>
+    <string name="loremIpsun" translatable="false">Lorem ipsum nulla velit vestibulum suscipit mi iaculis amet erat, sit iaculis ac netus velit per nisl hac, id justo nulla venenatis cursus mollis suscipit cubilia. donec luctus etiam vel quisque imperdiet etiam pellentesque fusce potenti purus, quam sapien faucibus nisi elit convallis odio pharetra. vehicula himenaeos aenean urna ad diam suscipit nibh adipiscing, eget mattis ante interdum quis ultricies primis sagittis, euismod dictumst rutrum taciti felis taciti nunc. non sed congue dolor ipsum nec est eleifend aenean himenaeos, accumsan adipiscing class aliquet molestie tellus eleifend aenean dapibus felis, ac hendrerit integer odio auctor est etiam accumsan. </string>
+
     <string name="movie_and_genres">%s - %s</string>
+    <string name="noNetworkAvailable">No internet detected</string>
+    <string name="tryAgain">Try again</string>
+    <string name="overview">Overview</string>
+
+    <string name="search">Search movie</string>
 </resources>
