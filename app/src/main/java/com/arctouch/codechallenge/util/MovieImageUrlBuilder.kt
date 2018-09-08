@@ -1,6 +1,5 @@
 package com.arctouch.codechallenge.util
 
-import android.view.View
 import android.widget.ImageView
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.api.TmdbApi
@@ -11,6 +10,7 @@ import com.bumptech.glide.request.RequestOptions
 private val POSTER_URL = "https://image.tmdb.org/t/p/w154"
 private val BACKDROP_URL = "https://image.tmdb.org/t/p/w780"
 
+//Glide controller
 class MovieImageUrlBuilder {
     companion object {
         fun loadImageForBackdrop(path: String?, imageView: ImageView){

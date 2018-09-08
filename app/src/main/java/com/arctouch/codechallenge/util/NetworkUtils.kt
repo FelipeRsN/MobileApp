@@ -8,6 +8,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+//generate instance of retrofit and reuse as singleton pattern
 class NetworkUtils {
     companion object {
         private var instance: Retrofit? = null

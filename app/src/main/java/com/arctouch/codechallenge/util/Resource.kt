@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.util
 
+//state and data Resource used on viewmodels
 class Resource<T> private constructor(val status: Status, val data: T? = null, val throwable: Throwable? = null) {
 
     enum class Status {

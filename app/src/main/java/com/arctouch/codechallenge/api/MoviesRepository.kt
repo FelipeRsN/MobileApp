@@ -6,8 +6,8 @@ import com.arctouch.codechallenge.model.UpcomingMoviesResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
+//repository to centralize data request
 class MoviesRepository (private val api: TmdbApi): MoviesDataSource {
-
     @SuppressLint("CheckResult")
     override fun getMovieList(page: Long, success: (UpcomingMoviesResponse) -> Unit, failure: (Throwable) -> Unit) {
         api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, page, TmdbApi.DEFAULT_REGION)

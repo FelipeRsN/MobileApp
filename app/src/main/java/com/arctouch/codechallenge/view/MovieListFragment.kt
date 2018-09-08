@@ -20,10 +20,11 @@ import com.arctouch.codechallenge.viewmodel.MovieListViewModel
 import com.arctouch.codechallenge.viewmodel.NavigationViewModel
 import kotlinx.android.synthetic.main.movie_list_fragment.*
 
-
 class MovieListFragment : Fragment() {
+    //viewmodels
     private lateinit var viewModel: MovieListViewModel
     private lateinit var navigationViewModel: NavigationViewModel
+
     private var snackbar: Snackbar? = null
     private lateinit var adapter: MoviesListAdapter
     private var movies = ArrayList<Movie>()
@@ -39,6 +40,7 @@ class MovieListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //initialize viewmodels
         viewModel = ViewModelProviders.of(this).get(MovieListViewModel::class.java)
         navigationViewModel = ViewModelProviders.of(activity!!).get(NavigationViewModel::class.java)
         viewModel.init()
@@ -48,19 +50,22 @@ class MovieListFragment : Fragment() {
         //setup recyclerview and listeners
         setupRecyclerViewAndListeners()
 
-        //viewmodel controller
+        //viewmodel data observer
         viewModel.moviesData.observe(this, Observer { it ->
             it?.let {
                 when (it.status) {
+                    //success. populate list
                     Resource.Status.SUCCESS ->{
                         movies.addAll(it.data!!)
                         adapter.notifyDataSetChanged()
                         dismissSwipeRefresh()
                         dismissSnackBar()
                     }
+                    //loading. show swiperefresh
                     Resource.Status.LOADING ->{
                         showSwipeRefresh()
                     }
+                    //error. show snackbar with error
                     Resource.Status.ERROR ->{
                         dismissSwipeRefresh()
                         showSnackBar(it.throwable)
@@ -68,6 +73,8 @@ class MovieListFragment : Fragment() {
                 }
             }
         })
+
+        //get data
         viewModel.getMoviesData()
     }
 

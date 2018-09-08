@@ -9,7 +9,7 @@ import com.arctouch.codechallenge.model.Movie
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder
 import kotlinx.android.synthetic.main.movie_listitem.view.*
 
-
+//movie list adapter with clickListener interface to detect item click on fragment
 class MoviesListAdapter() : RecyclerView.Adapter<MoviesListAdapter.ViewHolder>() {
     private var clickListener: ClickListener? = null
     private lateinit var movies: List<Movie>
